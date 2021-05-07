@@ -1,0 +1,17 @@
+{
+  "name": "wyrihaximus/composer.lock-diff",
+  "description": "GitHub Action that diffs composer.lock between current branch and default branch",
+  "require": {
+    "php": "^7.4",
+    "composer/composer": "^2.0",
+    "ion-bazan/composer-diff": "^1.1",
+    "symfony/console": "^5.2"
+  },
+  "config": {
+    "platform": {
+      "php": "7.4"
+    },
+    "preferred-install": "dist",
+    "sort-packages": true
+  }
+}

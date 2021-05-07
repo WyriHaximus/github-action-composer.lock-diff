@@ -1,6 +1,6 @@
 name: Create Release
 env:
-  DOCKER_IMAGE: wyrihaximusgithubactions/jwage-changelog-generator
+  DOCKER_IMAGE: wyrihaximusgithubactions/composer.lock-diff
   MILESTONE: ${{ github.event.milestone.title }}
 on:
   milestone:
