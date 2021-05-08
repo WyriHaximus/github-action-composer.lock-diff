@@ -1,1 +1,1 @@
-FROM wyrihaximusgithubactions/composer.lock-diff:master
+FROM wyrihaximusgithubactions/composer.lock-diff:main
