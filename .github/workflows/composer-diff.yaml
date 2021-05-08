@@ -1,0 +1,38 @@
+name: Helm Diff
+on:
+  pull_request:
+    paths:
+      - '**/composer.lock'
+    types:
+      - opened
+      - synchronize
+      - reopened
+jobs:
+  generate-composer-lock-diff:
+    name: Generate composer.lock diff
+    needs:
+      - build-docker-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: git branch
+      - run: sed -i $(echo "s/master/sha-$GITHUB_SHA/g") Dockerfile
+      - name: Generate composer.lock diff
+        id: composerlockdiff
+        uses: WyriHaximus/github-action-composer.lock-diff@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Upsert Production Comment'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: production
+          message: |
+            Composer Production Diff:
+            ${{ steps.composerlockdiff.outputs.production }}
+      - name: 'Upsert Development Comment'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: development
+          message: |
+            Composer Development Diff:
+            ${{ steps.composerlockdiff.outputs.development }}
