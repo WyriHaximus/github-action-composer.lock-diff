@@ -2,8 +2,21 @@
 
 set -eo pipefail
 
+if [ $(echo ${GITHUB_BASE_REF} | wc -c) -eq 1 ] ; then
+  if git rev-parse --verify main > /dev/null 2>&1; then
+    branch="main"
+  elif git rev-parse --verify master > /dev/null 2>&1; then
+    branch="master"
+  fi
+else
+  branch="${GITHUB_BASE_REF}"
+fi
 
-diffProd=$(./vendor/bin/composer-diff master --with-links --with-platform)
+echo "Found default branch: ${branch}"
+
+git fetch --depth=1 origin +refs/heads/*:refs/heads/*
+
+diffProd=$(/workdir/vendor/bin/composer-diff "${branch}" --with-links --with-platform --no-dev -vvv)
 
 echo "Production:"
 echo "${diffProd}"
@@ -14,7 +27,7 @@ diffProd="${diffProd//$'\r'/'%0D'}"
 
 echo "::set-output name=production::$diffProd"
 
-diffDev=$(./vendor/bin/composer-diff master --with-links --with-platform)
+diffDev=$(/workdir/vendor/bin/composer-diff "${branch}" --with-links --with-platform --no-prod -vvv)
 
 echo "Development:"
 echo "${diffDev}"
