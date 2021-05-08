@@ -9,8 +9,6 @@ RUN composer install --ansi --no-progress --no-interaction --prefer-dist
 ## Compile runtime image
 FROM wyrihaximusnet/php:7.4-nts-alpine3.13-slim-root AS runtime
 RUN mkdir /workdir
-WORKDIR /workdir
 COPY ./entrypoint.sh ./composer.* /workdir/
 COPY --from=install-dependencies /workdir/vendor/ /workdir/vendor/
-RUN ls -lasth ./
 ENTRYPOINT ["/workdir/entrypoint.sh"]

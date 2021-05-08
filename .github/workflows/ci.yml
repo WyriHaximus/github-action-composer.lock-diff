@@ -5,7 +5,7 @@ env:
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 jobs:
   generate-ref:
@@ -78,42 +78,31 @@ jobs:
       - name: Push commit sha image to Docker Hub
         if: contains(github.ref, 'dependabot') == false
         run: docker push "${DOCKER_IMAGE}:sha-${GITHUB_SHA}"
-  generate-changelog:
-    name: Generate Changelog
+  generate-composer-lock-diff:
+    name: Generate composer.lock diff
     needs:
       - build-docker-image
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+      - run: git branch
       - run: sed -i $(echo "s/master/sha-$GITHUB_SHA/g") Dockerfile
-      - name: Generate changelog
+      - name: Generate composer.lock diff
+        id: composerlockdiff
         uses: ./
-        id: changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Upsert Production Comment'
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
-          milestone: "v1.0.0"
-      - name: Show changelog
-        run: echo "${CHANGELOG}"
-        env:
-          CHANGELOG: ${{ steps.changelog.outputs.changelog }}
-  generate-changelog-labels:
-    name: Generate Changelog Labels
-    needs:
-      - build-docker-image
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - run: sed -i $(echo "s/master/sha-$GITHUB_SHA/g") Dockerfile
-      - name: Generate changelog
-        uses: ./
-        id: changelog
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          header: production
+          message: |
+            Composer Production Diff:
+            ${{ steps.composerlockdiff.outputs.production }}
+      - name: 'Upsert Development Comment'
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
-          milestone: "v1.0.0"
-          labels: "Bug 🐞,Feature 🏗,Enhancement ✨"
-      - name: Show changelog
-        run: echo "${CHANGELOG}"
-        env:
-          CHANGELOG: ${{ steps.changelog.outputs.changelog }}
+          header: development
+          message: |
+            Composer Development Diff:
+            ${{ steps.composerlockdiff.outputs.development }}
