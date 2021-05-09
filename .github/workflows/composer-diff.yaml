@@ -5,6 +5,9 @@ on:
       - opened
       - synchronize
       - reopened
+permissions:
+  contents: read
+  issues: write
 jobs:
   comment-composer-lock-diff:
     name: Comment composer.lock diff
