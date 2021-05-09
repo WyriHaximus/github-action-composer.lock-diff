@@ -16,24 +16,14 @@ echo "Found default branch: ${branch}"
 
 git fetch --depth=1 origin +refs/heads/*:refs/heads/*
 
-diffProd=$(/workdir/vendor/bin/composer-diff "${branch}" --with-links --with-platform --no-dev -vvv)
+/workdir/vendor/bin/composer-diff "${branch}" --with-links --with-platform --no-dev -vvv > /workdir/production.md
 
 echo "Production:"
-echo "${diffProd}"
+cat /workdir/production.md
+php /workdir/comment.php production "🏰 Composer Production Dependency changes 🏰"
 
-diffProd="${diffProd//'%'/'%25'}"
-diffProd="${diffProd//$'\n'/'%0A'}"
-diffProd="${diffProd//$'\r'/'%0D'}"
-
-echo "::set-output name=production::$diffProd"
-
-diffDev=$(/workdir/vendor/bin/composer-diff "${branch}" --with-links --with-platform --no-prod -vvv)
+/workdir/vendor/bin/composer-diff "${branch}" --with-links --with-platform --no-prod -vvv > /workdir/development.md
 
 echo "Development:"
-echo "${diffDev}"
-
-diffDev="${diffDev//'%'/'%25'}"
-diffDev="${diffDev//$'\n'/'%0A'}"
-diffDev="${diffDev//$'\r'/'%0D'}"
-
-echo "::set-output name=development::$diffDev"
+cat /workdir/development.md
+php /workdir/comment.php development "🚧 Composer Development Dependency changes 🚧"
