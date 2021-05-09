@@ -7,7 +7,7 @@ on:
       - reopened
 permissions:
   contents: read
-  issues: read
+  issues: write
   pull-requests: write
 jobs:
   comment-composer-lock-diff:
