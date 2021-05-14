@@ -1,12 +1,12 @@
 name: Composer Diff
 on:
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - synchronize
       - reopened
 permissions:
-  pull-requests: write
+  issues: write
 jobs:
   comment-composer-lock-diff:
     name: Comment composer.lock diff
