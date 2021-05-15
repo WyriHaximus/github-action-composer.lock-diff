@@ -6,7 +6,7 @@ on:
       - synchronize
       - reopened
 permissions:
-  issues: write
+  pull_requests: write
 jobs:
   comment-composer-lock-diff:
     name: Comment composer.lock diff
