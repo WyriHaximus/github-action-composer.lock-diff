@@ -44,10 +44,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - run: mkdir ./docker-image/
       - run: docker version
       - run: docker images
-      - run: docker images
-      - run: mkdir -p $(echo "./clair/${DOCKER_IMAGE}:${REF}" | tr '[:upper:]' '[:lower:]')
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
       - run: docker build --no-cache -t "${DOCKER_IMAGE}:${REF}" . -f Dockerfile-build --target=runtime
@@ -59,7 +58,15 @@ jobs:
       - run: echo -e "${DOCKER_IMAGE}:${REF}" | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress --format table %'
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
+      - run: docker save "${DOCKER_IMAGE}:sha-${GITHUB_SHA}" | gzip -9 > ./docker-image/image.tar
+        if: github.actor == 'dependabot[bot]'
       - run: docker images
+      - name: Upload Images
+        if: github.actor == 'dependabot[bot]'
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-image
+          path: ./docker-image
       - name: Login to Docker Hub
         if: github.actor != 'dependabot[bot]'
         env:
@@ -85,6 +92,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Download Images
+        if: github.actor == 'dependabot[bot]'
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image
+          path: ./docker-image
+      - run: docker load --input ./docker-image/image.tar
+        if: github.actor == 'dependabot[bot]'
       - run: git branch
       - run: sed -i $(echo "s/main/sha-$GITHUB_SHA/g") Dockerfile
       - name: Comment composer.lock diff
