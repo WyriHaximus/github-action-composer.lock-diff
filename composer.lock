@@ -664,16 +664,16 @@
         },
         {
             "name": "ion-bazan/composer-diff",
-            "version": "v1.1.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/IonBazan/composer-diff.git",
-                "reference": "e6703e6347ca4ee10d07db3babd3c0d6224022b3"
+                "reference": "ae1fca20c7729c7034941f9ec096b10a87495b45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/IonBazan/composer-diff/zipball/e6703e6347ca4ee10d07db3babd3c0d6224022b3",
-                "reference": "e6703e6347ca4ee10d07db3babd3c0d6224022b3",
+                "url": "https://api.github.com/repos/IonBazan/composer-diff/zipball/ae1fca20c7729c7034941f9ec096b10a87495b45",
+                "reference": "ae1fca20c7729c7034941f9ec096b10a87495b45",
                 "shasum": ""
             },
             "require": {
@@ -725,9 +725,9 @@
             ],
             "support": {
                 "issues": "https://github.com/IonBazan/composer-diff/issues",
-                "source": "https://github.com/IonBazan/composer-diff/tree/v1.1.0"
+                "source": "https://github.com/IonBazan/composer-diff/tree/v1.1.1"
             },
-            "time": "2021-04-08T05:37:46+00:00"
+            "time": "2021-04-22T05:12:40+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
