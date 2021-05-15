@@ -61,7 +61,7 @@ jobs:
           REF: ${{ needs.generate-ref.outputs.ref }}
       - run: docker images
       - name: Login to Docker Hub
-        if: contains(github.ref, 'dependabot') == false
+        if: github.actor != 'dependabot[bot]'
         env:
           DOCKER_USER: ${{ secrets.HUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.HUB_PASSCODE }}
@@ -71,12 +71,12 @@ jobs:
             --username "${{ secrets.DOCKER_USER }}" \
             --password-stdin
       - name: Push branch image to Docker Hub
-        if: contains(github.ref, 'dependabot') == false
+        if: github.actor != 'dependabot[bot]'
         run: docker push "${DOCKER_IMAGE}:${REF}"
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
       - name: Push commit sha image to Docker Hub
-        if: contains(github.ref, 'dependabot') == false
+        if: github.actor != 'dependabot[bot]'
         run: docker push "${DOCKER_IMAGE}:sha-${GITHUB_SHA}"
   comment-composer-lock-diff:
     name: Comment composer.lock diff
