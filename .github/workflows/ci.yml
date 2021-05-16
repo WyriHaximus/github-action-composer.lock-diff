@@ -103,6 +103,14 @@ jobs:
       - run: git branch
       - run: sed -i $(echo "s/main/sha-$GITHUB_SHA/g") Dockerfile
       - name: Comment composer.lock diff
+        if: github.actor != 'dependabot[bot]'
         uses: ./
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Comment composer.lock diff
+        if: github.actor == 'dependabot[bot]'
+        uses: ./
+        with:
+          dryRun: yes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

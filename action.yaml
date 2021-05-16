@@ -6,3 +6,8 @@ branding:
 runs:
   using: 'docker'
   image: 'Dockerfile'
+inputs:
+  dryRun:
+    description: Generate the comment contents, but don't make the actual comments, set to "yes" to activate, off by default.
+    required: false
+    default: 'no'
