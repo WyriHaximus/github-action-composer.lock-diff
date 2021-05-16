@@ -1,10 +1,17 @@
 name: Composer Diff
 on:
+  ## To make this workflow work in the simplest way possible, without a PAT or juggling information between, we need to
+  ## run it with permissions as if it was already merged.
+  ## Refs: https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_target
+  ## Refs: https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+  ## Refs: https://twitter.com/WyriHaximus/status/1393679576828686340
   pull_request_target:
     types:
       - opened
       - synchronize
       - reopened
+## This workflow needs the `pull-request` permissions to work
+## Refs: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#permissions
 permissions:
   pull-requests: write
 jobs:
@@ -12,6 +19,8 @@ jobs:
     name: Comment composer.lock diff
     runs-on: ubuntu-latest
     steps:
+      ## Use v1 as it will do a full checkout, where v2 will only do a partial and not fetch all heads, two of which
+      ## we need to create the diff between the PR's branch and the PR's target branch.
       - uses: actions/checkout@v1
       - name: Comment composer.lock diff
         uses: WyriHaximus/github-action-composer.lock-diff@main
