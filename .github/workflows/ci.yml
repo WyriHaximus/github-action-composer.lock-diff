@@ -109,9 +109,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Comment composer.lock diff
-        if: github.actor == 'dependabot[bot]'
+        id: composerdiff
         uses: ./
         with:
           dryRun: yes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Show production table
+        run: echo "${PRODUCTION}"
+        env:
+          PRODUCTION: ${{ steps.composerdiff.outputs.production }}
+      - name: Show development table
+        run: echo "${DEVELOPMENT}"
+        env:
+          DEVELOPMENT: ${{ steps.composerdiff.outputs.development }}
