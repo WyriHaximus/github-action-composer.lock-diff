@@ -11,3 +11,8 @@ inputs:
     description: Generate the comment contents, but don't make the actual comments, set to "yes" to activate, off by default.
     required: false
     default: 'no'
+outputs:
+  production:
+    description: Changed production dependencies table
+  development:
+    description: Changed development dependencies table
