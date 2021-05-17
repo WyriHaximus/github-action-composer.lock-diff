@@ -53,7 +53,7 @@ jobs:
       ## we need to create the diff between the PR's branch and the PR's target branch.
       - uses: actions/checkout@v1
       - name: Comment composer.lock diff
-        uses: WyriHaximus/github-action-composer.lock-diff@main
+        uses: WyriHaximus/github-action-composer.lock-diff@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
