@@ -18,7 +18,7 @@ Whether to run this action in dry-run mode or not. Setting this to `yes` will pr
 
 ## Output
 
-This action has two outputs, the `production` and `development` outputs respective tables for each set of dependencies.
+This action has two outputs: the `production` and `development` outputs respective tables for each set of dependencies.
 
 ## Example
 
