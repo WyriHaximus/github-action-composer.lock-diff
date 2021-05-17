@@ -15,7 +15,7 @@ jobs:
       - run: sleep 13
       - name: 'Wait for status checks'
         id: waitforstatuschecks
-        uses: "WyriHaximus/github-action-wait-for-status@master"
+        uses: "WyriHaximus/github-action-wait-for-status@v1"
         with:
           ignoreActions: "Wait for status checks"
           checkInterval: 5
@@ -59,7 +59,7 @@ jobs:
       changelog: ${{ steps.changelog.outputs.changelog }}
     steps:
       - name: Generate changelog
-        uses: WyriHaximus/github-action-jwage-changelog-generator@master
+        uses: WyriHaximus/github-action-jwage-changelog-generator@v1
         id: changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
