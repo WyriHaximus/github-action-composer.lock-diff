@@ -44,14 +44,17 @@ on:
 ## Refs: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#permissions
 permissions:
   pull-requests: write
+  contents: read
 jobs:
   comment-composer-lock-diff:
     name: Comment composer.lock diff
     runs-on: ubuntu-latest
     steps:
-      ## Use v1 as it will do a full checkout, where v2 will only do a partial and not fetch all heads, two of which
-      ## we need to create the diff between the PR's branch and the PR's target branch.
-      - uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
       - name: Comment composer.lock diff
         uses: WyriHaximus/github-action-composer.lock-diff@v1
         env:
