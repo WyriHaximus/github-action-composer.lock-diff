@@ -708,16 +708,16 @@
         },
         {
             "name": "ion-bazan/composer-diff",
-            "version": "v1.1.1",
+            "version": "v1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/IonBazan/composer-diff.git",
-                "reference": "ae1fca20c7729c7034941f9ec096b10a87495b45"
+                "reference": "dd04c557154b61eece5259880a11c68d8853140e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/IonBazan/composer-diff/zipball/ae1fca20c7729c7034941f9ec096b10a87495b45",
-                "reference": "ae1fca20c7729c7034941f9ec096b10a87495b45",
+                "url": "https://api.github.com/repos/IonBazan/composer-diff/zipball/dd04c557154b61eece5259880a11c68d8853140e",
+                "reference": "dd04c557154b61eece5259880a11c68d8853140e",
                 "shasum": ""
             },
             "require": {
@@ -727,8 +727,8 @@
             },
             "require-dev": {
                 "composer/composer": "^1.1 || ^2.0",
-                "symfony/console": "^2.3 || ^3.0 || ^4.0 || ^5.0",
-                "symfony/phpunit-bridge": "^4.2 || ^5.0"
+                "symfony/console": "^2.3 || ^3.0 || ^4.0 || ^5.0 || ^6.0",
+                "symfony/phpunit-bridge": "^4.2 || ^5.0 || ^6.0"
             },
             "suggest": {
                 "composer/composer": "To use the binary without composer runtime",
@@ -739,7 +739,7 @@
             ],
             "type": "composer-plugin",
             "extra": {
-                "class": "IonBazan\\ComposerDiff\\Plugin"
+                "class": "IonBazan\\ComposerDiff\\Composer\\Plugin"
             },
             "autoload": {
                 "psr-4": {
@@ -769,9 +769,9 @@
             ],
             "support": {
                 "issues": "https://github.com/IonBazan/composer-diff/issues",
-                "source": "https://github.com/IonBazan/composer-diff/tree/v1.1.1"
+                "source": "https://github.com/IonBazan/composer-diff/tree/v1.3.1"
             },
-            "time": "2021-04-22T05:12:40+00:00"
+            "time": "2021-06-22T02:08:55+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
