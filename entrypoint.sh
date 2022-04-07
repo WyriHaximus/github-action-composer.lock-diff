@@ -12,6 +12,19 @@ production=$(cat /workdir/production.md)
 /workdir/vendor/bin/composer-diff "${GITHUB_BASE_REF}:composer.lock" "${GITHUB_HEAD_REF}:composer.lock" --with-links --with-platform --no-prod -vvv > /workdir/development.md
 development=$(cat /workdir/development.md)
 
+echo "Raw:"
+echo "=================================================="
+echo "Production:"
+echo "${production}"
+echo "--------------------------------------------------"
+echo "Development:"
+echo "${development}"
+
+php /workdir/post-process.php production
+php /workdir/post-process.php development
+
+echo "Post Processed:"
+echo "=================================================="
 echo "Production:"
 echo "${production}"
 echo "--------------------------------------------------"
