@@ -19,6 +19,7 @@ $comments = json_decode($res->getBody()->getContents(), true);
 foreach ($comments as $comment) {
     if (strpos($comment['body'], $locator) === 0) {
         if (strlen($diff) === 0) {
+            echo 'Deleting ', $argv[1], ' comment', PHP_EOL;
             $client->request('DELETE', 'https://api.github.com/repos/' . getenv('GITHUB_REPOSITORY') . '/issues/comments/' . $comment['id'], [
                 'headers' => [
                     'Accept' => 'application/vnd.github.v3+json',
@@ -29,6 +30,7 @@ foreach ($comments as $comment) {
             exit(0);
         }
 
+        echo 'Updating ', $argv[1], ' comment', PHP_EOL;
         $client->request('PATCH', 'https://api.github.com/repos/' . getenv('GITHUB_REPOSITORY') . '/issues/comments/' . $comment['id'], [
             'headers' => [
                 'Accept' => 'application/vnd.github.v3+json',
@@ -46,6 +48,8 @@ if (strlen($diff) === 0) {
     exit(0);
 }
 
+
+echo 'Posting ', $argv[1], ' comment', PHP_EOL;
 $client->request('POST', 'https://api.github.com/repos/' . getenv('GITHUB_REPOSITORY') . '/issues/' . $prNumber . '/comments', [
     'headers' => [
         'Accept' => 'application/vnd.github.v3+json',
