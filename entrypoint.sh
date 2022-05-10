@@ -2,6 +2,9 @@
 
 set -eo pipefail
 
+# c.f. https://github.com/actions/checkout/issues/760
+git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
 echo "Base branch: ${GITHUB_BASE_REF}"
 echo "Head branch: ${GITHUB_HEAD_REF}"
 
