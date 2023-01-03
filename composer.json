@@ -13,6 +13,9 @@
       "php": "7.4"
     },
     "preferred-install": "dist",
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "ion-bazan/composer-diff": true
+    }
   }
 }
