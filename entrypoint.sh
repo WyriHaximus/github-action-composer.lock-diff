@@ -34,16 +34,15 @@ echo "--------------------------------------------------"
 echo "Development:"
 echo "${development}"
 
-production="${production//'%'/'%25'}"
-production="${production//$'\n'/'%0A'}"
-production="${production//$'\r'/'%0D'}"
+delimiter="$(openssl rand -hex 8)"
+echo "production<<${delimiter}" >> "${GITHUB_OUTPUT}"
+echo "$production" >> "${GITHUB_OUTPUT}"
+echo "${delimiter}" >> "${GITHUB_OUTPUT}"
 
-development="${development//'%'/'%25'}"
-development="${development//$'\n'/'%0A'}"
-development="${development//$'\r'/'%0D'}"
-
-echo "::set-output name=production::$production"
-echo "::set-output name=development::$development"
+delimiter="$(openssl rand -hex 8)"
+echo "development<<${delimiter}" >> "${GITHUB_OUTPUT}"
+echo "$development" >> "${GITHUB_OUTPUT}"
+echo "${delimiter}" >> "${GITHUB_OUTPUT}"
 
 
 if [ "$INPUT_DRYRUN" != "yes" ]
