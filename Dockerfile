@@ -1,1 +1,1 @@
-FROM wyrihaximusgithubactions/composer.lock-diff:main
+FROM wyrihaximusgithubactions/composer.lock-diff:v1.3.0
