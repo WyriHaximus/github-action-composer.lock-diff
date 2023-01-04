@@ -9,6 +9,9 @@ RUN composer install --ansi --no-progress --no-interaction --prefer-dist
 ## Compile runtime image
 FROM wyrihaximusnet/php:8.2-nts-alpine-slim-root AS runtime
 RUN mkdir /workdir
-COPY ./entrypoint.sh ./comment.php ./post-process.php ./composer.* /workdir/
+COPY ./entrypoint.sh ./*.php ./composer.* /workdir/
+RUN apk upgrade
 COPY --from=install-dependencies /workdir/vendor/ /workdir/vendor/
+# hadolint ignore=DL3018
+RUN apk add --no-cache jq
 ENTRYPOINT ["/workdir/entrypoint.sh"]
