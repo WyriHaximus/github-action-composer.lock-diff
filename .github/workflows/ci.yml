@@ -14,7 +14,7 @@ jobs:
     outputs:
       REF: ${{ steps.generate-ref.outputs.ref }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - id: generate-ref
         name: Generate Ref
         run: |
@@ -30,7 +30,7 @@ jobs:
     name: Lint Dockerfile
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: Lint Dockerfile
         uses: docker://hadolint/hadolint:latest-debian
         with:
@@ -43,7 +43,7 @@ jobs:
       - lint-dockerfile
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - run: mkdir ./docker-image/
       - run: docker version
       - run: docker images
@@ -92,7 +92,12 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - name: Check if composer.lock has changed
+        id: composer-lock-changed
+        uses: tj-actions/changed-files@v35
+        with:
+          files: composer.lock
       - name: Download Images
         if: github.actor == 'dependabot[bot]'
         uses: actions/download-artifact@v2
@@ -123,3 +128,17 @@ jobs:
         run: echo "${DEVELOPMENT}"
         env:
           DEVELOPMENT: ${{ steps.composerdiff.outputs.development }}
+      - name: Assert Production Output
+        if: steps.composer-lock-changed.outputs.any_changed == 'true' && ((steps.composerdiff.outputs.development == '' && steps.composerdiff.outputs.production != '') || (steps.composerdiff.outputs.development != '' && steps.composerdiff.outputs.production != ''))
+        uses: nick-fields/assert-action@v1
+        with:
+          expected: "| Prod Packages"
+          actual: ${{ steps.composerdiff.outputs.production }}
+          comparison: startsWith
+      - name: Assert Development Output
+        if: steps.composer-lock-changed.outputs.any_changed == 'true' && ((steps.composerdiff.outputs.development != '' && steps.composerdiff.outputs.production == '') || (steps.composerdiff.outputs.development != '' && steps.composerdiff.outputs.production != ''))
+        uses: nick-fields/assert-action@v1
+        with:
+          expected: "🚧 Composer Development Dependency changes 🚧"
+          actual: ${{ steps.composerdiff.outputs.development }}
+          comparison: startsWith
