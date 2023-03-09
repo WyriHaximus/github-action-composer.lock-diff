@@ -1,8 +1,8 @@
 <?php
 
-require '/workdir/vendor/autoload.php';
+require 'vendor/autoload.php';
 
-$diff = file_get_contents('/workdir/' . $argv[1] . '.md');
+$diff = file_get_contents($argv[1] . '.md');
 
 preg_match_all('/ \| dev-\b(\w.*)\b ([0-9a-f]{7}) \| /', $diff, $matches);
 
@@ -24,4 +24,4 @@ if (strpos($processedContents, '[Compare]') === false) {
     $processedContents = '';
 }
 
-file_put_contents('/workdir/' . $argv[1] . '.md', $processedContents);
+file_put_contents($argv[1] . '.md', $processedContents);

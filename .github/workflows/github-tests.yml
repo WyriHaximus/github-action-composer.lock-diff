@@ -1,0 +1,103 @@
+name: GitHub Test
+env:
+  DOCKER_IMAGE: wyrihaximusgithubactions/composer.lock-diff
+  DOCKER_BUILDKIT: 1
+on:
+  push:
+  pull_request:
+jobs:
+  cat-composer-json:
+    name: cat-composer-json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          cat composer.lock
+  base-script-test:
+    name: base-script-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - run: |
+          sleep 60
+          branchPoint=$(
+            git log --no-merges --graph --oneline --decorate origin/main..$(git branch --show-current) | \
+            tac | \
+            grep -o '[a-f0-9]\{7,11\}' | \
+            head -n 1 | \
+            xargs -I '{}' git rev-parse "{}^"
+          )
+          
+          echo $branchPoint;
+          
+          git show $branchPoint:composer.lock
+  entry-point-v2:
+    name: entry-point-v2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "latest"
+      - uses: "ramsey/composer-install@v2"
+      - run: |
+          ./entrypoint.v2.sh
+        env:
+          DRYRUN: yes
+  no-entry-point-v2:
+    name: no-entry-point-v2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "latest"
+      - uses: "ramsey/composer-install@v2"
+      - run: |
+          branchPoint=$(
+            git log --no-merges --graph --oneline --decorate origin/main..$(git branch --show-current) | \
+            tac | \
+            grep -o '[a-f0-9]\{7,11\}' | \
+            head -n 1 | \
+            xargs -I '{}' git rev-parse "{}^"
+          )
+          
+          
+          # c.f. https://github.com/actions/checkout/issues/760
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        
+          git fetch --depth=1 origin +refs/heads/*:refs/heads/* || true
+          git show $branchPoint:composer.lock | cat > "/tmp/branch-point-composer.lock"
+          
+          ./vendor/bin/composer-diff "${GITHUB_BASE_REF}:composer.lock" /tmp/branch-point-composer.lock --with-links --with-platform --no-dev -vvv > ./production.md
+          production=$(cat ./production.md)
+          ./vendor/bin/composer-diff "${GITHUB_BASE_REF}:composer.lock" /tmp/branch-point-composer.lock --with-links --with-platform --no-prod -vvv > ./development.md
+          development=$(cat ./development.md)
+
+          echo "Raw:"
+          echo "=================================================="
+          echo "Production:"
+          echo "${production}"
+          echo "--------------------------------------------------"
+          echo "Development:"
+          echo "${development}"
+
+          php ./post-process.php production
+          php ./post-process.php development
+
+          echo "Post Processed:"
+          echo "=================================================="
+          echo "Production:"
+          echo "${production}"
+          echo "--------------------------------------------------"
+          echo "Development:"
+          echo "${development}"
