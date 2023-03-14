@@ -77,14 +77,33 @@ jobs:
           docker login \
             --username "${{ secrets.DOCKER_USER }}" \
             --password-stdin
+      - name: Login to GitHub Container Registry
+        if: github.actor != 'dependabot[bot]'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | \
+          docker login ghcr.io \
+            --username "${GITHUB_ACTOR}" \
+            --password-stdin
       - name: Push branch image to Docker Hub
         if: github.actor != 'dependabot[bot]'
         run: docker push "${DOCKER_IMAGE}:${REF}"
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
+      - name: Push branch image to GitHub Container Registry
+        if: github.actor != 'dependabot[bot]'
+        run: |
+          docker tag "${DOCKER_IMAGE}:${REF}" $(echo "ghcr.io/${GITHUB_REPOSITORY}:${REF}" | tr '[:upper:]' '[:lower:]')
+          docker push $(echo "ghcr.io/${GITHUB_REPOSITORY}:${REF}" | tr '[:upper:]' '[:lower:]')
+        env:
+          REF: ${{ needs.generate-ref.outputs.ref }}
       - name: Push commit sha image to Docker Hub
         if: github.actor != 'dependabot[bot]'
         run: docker push "${DOCKER_IMAGE}:sha-${GITHUB_SHA}"
+      - name: Push commit sha image to GitHub Container Registry
+        if: github.actor != 'dependabot[bot]'
+        run: |
+          docker tag "${DOCKER_IMAGE}:sha-${GITHUB_SHA}" $(echo "ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA}" | tr '[:upper:]' '[:lower:]')
+          docker push $(echo "ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA}" | tr '[:upper:]' '[:lower:]')
   comment-composer-lock-diff:
     name: Comment composer.lock diff
     needs:
