@@ -88,13 +88,24 @@ jobs:
           docker login \
             --username "${{ secrets.DOCKER_USER }}" \
             --password-stdin
+      - name: Login to GitHub Container Registry
+        if: github.actor != 'dependabot[bot]'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | \
+          docker login ghcr.io \
+            --username "${GITHUB_ACTOR}" \
+            --password-stdin
       - name: Pull source image
         run: docker pull "${DOCKER_IMAGE}:sha-${GITHUB_SHA}"
       - name: Retag images for release
-        run: docker tag "${DOCKER_IMAGE}:sha-${GITHUB_SHA}" "${DOCKER_IMAGE}:${{ matrix.version }}"
+        run: | 
+          docker tag "${DOCKER_IMAGE}:sha-${GITHUB_SHA}" "${DOCKER_IMAGE}:${{ matrix.version }}"
+          docker tag "${DOCKER_IMAGE}:sha-${GITHUB_SHA}" $(echo "ghcr.io/${GITHUB_REPOSITORY}:${{ matrix.version }}"
       - run: docker images
       - name: Push release images to Docker Hub
         run: docker push "${DOCKER_IMAGE}:${{ matrix.version }}"
+      - name: Push release images to GitHub Container Registry
+        run: docker push $(echo "ghcr.io/${GITHUB_REPOSITORY}:${{ matrix.version }}"
   create-release:
     name: Create Release
     needs:
