@@ -35,7 +35,7 @@ jobs:
         uses: docker://hadolint/hadolint:latest-debian
         with:
           entrypoint: hadolint
-          args: Dockerfile-build
+          args: generate-comments/Dockerfile-build
   build-docker-image:
     name: Build Docker image
     needs:
@@ -49,7 +49,7 @@ jobs:
       - run: docker images
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
-      - run: docker build --no-cache -t "${DOCKER_IMAGE}:${REF}" . -f Dockerfile-build --target=runtime
+      - run: docker build --no-cache -t "${DOCKER_IMAGE}:${REF}" ./generate-comments/ -f generate-comments/Dockerfile-build --target=runtime
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
       - run: docker tag "${DOCKER_IMAGE}:${REF}" "${DOCKER_IMAGE}:sha-${GITHUB_SHA}"
@@ -126,7 +126,7 @@ jobs:
       - run: docker load --input ./docker-image/image.tar
         if: github.actor == 'dependabot[bot]'
       - run: git branch
-      - run: sed -i $(echo "s/main/sha-$GITHUB_SHA/g") Dockerfile
+      - run: sed -i $(echo "s/main/sha-$GITHUB_SHA/g") generate-comments/Dockerfile
       - name: Comment composer.lock diff
         if: github.actor != 'dependabot[bot]'
         uses: ./

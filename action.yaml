@@ -3,9 +3,6 @@ description: 'GitHub Action that diffs composer.lock between current branch and 
 branding:
   icon: 'grid'
   color: 'orange'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
 inputs:
   dryRun:
     description: Generate the comment contents, but don't make the actual comments, set to "yes" to activate, off by default.
@@ -16,3 +13,95 @@ outputs:
     description: Changed production dependencies table
   development:
     description: Changed development dependencies table
+runs:
+  using: "composite"
+  steps:
+    - name: Poke Pull Request to force Background Process generating a merged_commit_sha
+      uses: actions/github-script@v6
+      id: sha
+      with:
+        result-encoding: string
+        retries: 3
+        script: |
+          let timeout = 500;
+          var pr = (await github.rest.pulls.get({
+            pull_number: context.payload.pull_request.number,
+            owner: context.payload.repository.owner.login,
+            repo: context.payload.repository.name,
+          }));
+          console.log({
+              timeout: timeout,
+              mcs: pr.data.merge_commit_sha,
+              mergeable_state: pr.data.mergeable_state,
+          });
+          while (timeout < 60000 && pr.data.merge_commit_sha == null) {
+            timeout *= 2;
+            await new Promise(r => setTimeout(r, timeout));
+            pr = (await github.rest.pulls.get({
+              pull_number: context.payload.pull_request.number,
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+            }));
+            console.log({
+                timeout: timeout,
+                mcs: pr.data.merge_commit_sha,
+                mergeable_state: pr.data.mergeable_state,
+            });
+          }
+          pr = (await github.rest.pulls.get({
+            pull_number: context.payload.pull_request.number,
+            owner: context.payload.repository.owner.login,
+            repo: context.payload.repository.name,
+          }));
+          console.log({
+              timeout: timeout,
+              mcs: pr.data.merge_commit_sha,
+              mergeable_state: pr.data.mergeable_state,
+          });
+          require('fs').appendFileSync(process.env.GITHUB_OUTPUT, `sha=${pr.data.merge_commit_sha}\n`);
+    #          const requests = Array.from({length: 8}, (v, i) => 500 * Math.pow(2, i)).map(timeout => resolveShaAfterTimeout(timeout));
+    #          console.log(requests);
+    #          const pr = await Promise.any(requests);
+    #          requests.forEach(request => request.cancel());
+    #          const resolveShaAfterTimeout = async function (timeout) {
+    #            await new Promise(r => setTimeout(r, timeout));
+    #            return await github.rest.pulls.get({
+    #              pull_number: context.payload.pull_request.number,
+    #              owner: context.payload.repository.owner.login,
+    #              repo: context.payload.repository.name,
+    #            });
+    #          };
+    - name: Checkout Head Sha
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ steps.sha.outputs.sha }}
+        fetch-depth: 1
+        path: .wyrihaximus-composer.lock-diff/checkout/sha-sha
+    - name: Checkout Base Ref
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.base.ref }}
+        fetch-depth: 1
+        path: .wyrihaximus-composer.lock-diff/checkout/base-ref
+#    - name: Attempt to get branch point composer.lock
+#      shell: bash
+#      run: |
+#        cd .wyrihaximus-composer.lock-diff/checkout/head-sha
+#
+#        branchPoint=$(
+#          git log --no-merges --graph --oneline --decorate origin/${{ github.event.pull_request.base.ref }}..$(git branch --show-current) | \
+#          tac | \
+#          grep -o '[a-f0-9]\{7,11\}' | \
+#          head -n 1 | \
+#          xargs -I '{}' git rev-parse "{}^"
+#        )
+#
+#        git show $branchPoint:composer.lock | cat > ".wyrihaximus-composer.lock-diff/branch-point-composer.lock"
+#    - name: Cat branch point composer.lock
+#      shell: bash
+#      run: cat .wyrihaximus-composer.lock-diff/branch-point-composer.lock
+#    - name: Cat base ref composer.lock
+#      shell: bash
+#      run: cat .wyrihaximus-composer.lock-diff/checkout/base-ref/composer.lock
+    - name: Generate Comments
+      uses: docker://ghcr.io/wyrihaximus/github-action-composer.lock-diff:switch-to-composite-action
