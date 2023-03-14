@@ -1,1 +1,1 @@
-FROM wyrihaximusgithubactions/composer.lock-diff:main
+FROM ghcr.io/wyrihaximus/github-action-composer.lock-diff:main
