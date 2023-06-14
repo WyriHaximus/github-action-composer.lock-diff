@@ -8,6 +8,10 @@ inputs:
     description: Generate the comment contents, but don't make the actual comments, set to "yes" to activate, off by default.
     required: false
     default: 'no'
+  workingDirectory:
+    description: Directory to execute the diff generator in
+    required: false
+    default: ''
 outputs:
   production:
     description: Changed production dependencies table
@@ -104,4 +108,7 @@ runs:
 #      shell: bash
 #      run: cat .wyrihaximus-composer.lock-diff/checkout/base-ref/composer.lock
     - name: Generate Comments
-      uses: docker://ghcr.io/wyrihaximus/github-action-composer.lock-diff:switch-to-composite-action
+      uses: docker://ghcr.io/wyrihaximus/github-action-composer.lock-diff:main
+      with:
+        dryRun: ${{ inputs.dryRun }}
+        workingDirectory: ${{ inputs.workingDirectory }}
