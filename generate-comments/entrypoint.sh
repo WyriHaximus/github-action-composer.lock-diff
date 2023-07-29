@@ -2,9 +2,14 @@
 
 set -eo pipefail
 
-/workdir/vendor/bin/composer-diff ".wyrihaximus-composer.lock-diff/checkout/base-ref/composer.lock" ".wyrihaximus-composer.lock-diff/checkout/sha-sha/composer.lock" --with-links --with-platform --no-dev -vvv > /workdir/production.md
+
+echo "Working Directory:"
+workingDirectory=$([ -z "$INPUT_WORKINGDIRECTORY" ] && echo "" || echo "$(echo "${INPUT_WORKINGDIRECTORY}" | sed 's/\\//g')/")
+echo "${workingDirectory}"
+
+/workdir/vendor/bin/composer-diff ".wyrihaximus-composer.lock-diff/checkout/base-ref/${workingDirectory}composer.lock" ".wyrihaximus-composer.lock-diff/checkout/sha-sha/${workingDirectory}composer.lock" --with-links --with-platform --no-dev -vvv > /workdir/production.md
 production=$(cat /workdir/production.md)
-/workdir/vendor/bin/composer-diff ".wyrihaximus-composer.lock-diff/checkout/base-ref/composer.lock" ".wyrihaximus-composer.lock-diff/checkout/sha-sha/composer.lock" --with-links --with-platform --no-prod -vvv > /workdir/development.md
+/workdir/vendor/bin/composer-diff ".wyrihaximus-composer.lock-diff/checkout/base-ref/${workingDirectory}composer.lock" ".wyrihaximus-composer.lock-diff/checkout/sha-sha/${workingDirectory}composer.lock" --with-links --with-platform --no-prod -vvv > /workdir/development.md
 development=$(cat /workdir/development.md)
 
 echo "Raw:"

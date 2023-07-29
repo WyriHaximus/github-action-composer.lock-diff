@@ -16,6 +16,14 @@ Whether to run this action in dry-run mode or not. Setting this to `yes` will pr
 * *Type*: `string`
 * *Example*: `yes`
 
+### workingDirectory
+
+Which directory to run the composer diffing in.
+
+* *Required*: `No`
+* *Type*: `string`
+* *Example*: `path/to/directory/`
+
 ## Output
 
 This action has two outputs: the `production` and `development` outputs respective tables for each set of dependencies.
