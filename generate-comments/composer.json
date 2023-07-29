@@ -3,7 +3,7 @@
   "description": "GitHub Action that diffs composer.lock between current branch and default branch",
   "require": {
     "php": "^8.2",
-    "composer/composer": "^2.5.1",
+    "composer/composer": "^2.5.8",
     "guzzlehttp/guzzle": "^7.7.0",
     "ion-bazan/composer-diff": "^1.7",
     "symfony/console": "^6.3.0"
