@@ -108,8 +108,8 @@ jobs:
       - name: Create release/${{ matrix.version }} branch
         run: git checkout -b release/${{ matrix.version }} ${GITHUB_SHA}
       - run: sed -i 's/main/${{ matrix.version }}/g' action.yaml
-      - run: cat Dockerfile
-      - run: git add Dockerfile
+      - run: cat action.yaml
+      - run: git add action.yaml
       - run: git status
       - run: echo -e "${CHANGELOG}" > release-${{ matrix.version }}-changelog.md
         env:
