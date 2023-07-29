@@ -1,6 +1,5 @@
 name: Create Release
 env:
-  DOCKER_IMAGE: wyrihaximusgithubactions/composer.lock-diff
   MILESTONE: ${{ github.event.milestone.title }}
 on:
   milestone:
@@ -79,15 +78,6 @@ jobs:
         version: ${{ fromJson(needs.generate-version-strategy.outputs.docker_versions) }}
     runs-on: ubuntu-latest
     steps:
-      - name: Login to Docker Hub
-        env:
-          DOCKER_USER: ${{ secrets.HUB_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.HUB_PASSCODE }}
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | \
-          docker login \
-            --username "${{ secrets.DOCKER_USER }}" \
-            --password-stdin
       - name: Login to GitHub Container Registry
         if: github.actor != 'dependabot[bot]'
         run: |
@@ -96,14 +86,11 @@ jobs:
             --username "${GITHUB_ACTOR}" \
             --password-stdin
       - name: Pull source image
-        run: docker pull "${DOCKER_IMAGE}:sha-${GITHUB_SHA}"
+        run: docker pull "$(echo "ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA}" | tr '[:upper:]' '[:lower:]')"
       - name: Retag images for release
         run: | 
-          docker tag "${DOCKER_IMAGE}:sha-${GITHUB_SHA}" "${DOCKER_IMAGE}:${{ matrix.version }}"
-          docker tag "${DOCKER_IMAGE}:sha-${GITHUB_SHA}" $(echo "ghcr.io/${GITHUB_REPOSITORY}:${{ matrix.version }}" | tr '[:upper:]' '[:lower:]')
+          docker tag "$(echo "ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA}" | tr '[:upper:]' '[:lower:]')" $(echo "ghcr.io/${GITHUB_REPOSITORY}:${{ matrix.version }}" | tr '[:upper:]' '[:lower:]')
       - run: docker images
-      - name: Push release images to Docker Hub
-        run: docker push "${DOCKER_IMAGE}:${{ matrix.version }}"
       - name: Push release images to GitHub Container Registry
         run: docker push $(echo "ghcr.io/${GITHUB_REPOSITORY}:${{ matrix.version }}" | tr '[:upper:]' '[:lower:]')
   create-release:
@@ -120,7 +107,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Create release/${{ matrix.version }} branch
         run: git checkout -b release/${{ matrix.version }} ${GITHUB_SHA}
-      - run: sed -i 's/main/${{ matrix.version }}/g' Dockerfile
+      - run: sed -i 's/main/${{ matrix.version }}/g' action.yaml
       - run: cat Dockerfile
       - run: git add Dockerfile
       - run: git status
