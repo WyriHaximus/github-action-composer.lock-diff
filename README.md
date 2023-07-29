@@ -64,7 +64,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - name: Comment composer.lock diff
-        uses: WyriHaximus/github-action-composer.lock-diff@v1
+        uses: WyriHaximus/github-action-composer.lock-diff@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```

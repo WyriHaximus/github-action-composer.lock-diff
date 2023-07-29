@@ -1,6 +1,5 @@
 name: Continuous Integration
 env:
-  DOCKER_IMAGE: wyrihaximusgithubactions/composer.lock-diff
   DOCKER_BUILDKIT: 1
 on:
   push:
@@ -49,16 +48,16 @@ jobs:
       - run: docker images
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
-      - run: docker build --no-cache -t "${DOCKER_IMAGE}:${REF}" ./generate-comments/ -f generate-comments/Dockerfile-build --target=runtime
+      - run: docker build --no-cache -t "$(echo "ghcr.io/${GITHUB_REPOSITORY}:${REF}" | tr '[:upper:]' '[:lower:]')" ./generate-comments/ -f generate-comments/Dockerfile-build --target=runtime
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
-      - run: docker tag "${DOCKER_IMAGE}:${REF}" "${DOCKER_IMAGE}:sha-${GITHUB_SHA}"
+      - run: docker tag "$(echo "ghcr.io/${GITHUB_REPOSITORY}:${REF}" | tr '[:upper:]' '[:lower:]')" "$(echo "ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA}" | tr '[:upper:]' '[:lower:]')"
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
-      - run: echo -e "${DOCKER_IMAGE}:${REF}" | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress --format table %'
+      - run: echo -e "$(echo "ghcr.io/${GITHUB_REPOSITORY}:${REF}" | tr '[:upper:]' '[:lower:]')" | xargs -I % sh -c 'docker run -v /tmp/trivy:/var/lib/trivy -v /var/run/docker.sock:/var/run/docker.sock -t aquasec/trivy:latest --cache-dir /var/lib/trivy image --exit-code 1 --no-progress --format table %'
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
-      - run: docker save "${DOCKER_IMAGE}:sha-${GITHUB_SHA}" | gzip -9 > ./docker-image/image.tar
+      - run: docker save "$(echo "ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA}" | tr '[:upper:]' '[:lower:]')" | gzip -9 > ./docker-image/image.tar
         if: github.actor == 'dependabot[bot]'
       - run: docker images
       - name: Upload Images
@@ -67,16 +66,6 @@ jobs:
         with:
           name: docker-image
           path: ./docker-image
-      - name: Login to Docker Hub
-        if: github.actor != 'dependabot[bot]'
-        env:
-          DOCKER_USER: ${{ secrets.HUB_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.HUB_PASSCODE }}
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | \
-          docker login \
-            --username "${{ secrets.DOCKER_USER }}" \
-            --password-stdin
       - name: Login to GitHub Container Registry
         if: github.actor != 'dependabot[bot]'
         run: |
@@ -84,25 +73,15 @@ jobs:
           docker login ghcr.io \
             --username "${GITHUB_ACTOR}" \
             --password-stdin
-      - name: Push branch image to Docker Hub
-        if: github.actor != 'dependabot[bot]'
-        run: docker push "${DOCKER_IMAGE}:${REF}"
-        env:
-          REF: ${{ needs.generate-ref.outputs.ref }}
       - name: Push branch image to GitHub Container Registry
         if: github.actor != 'dependabot[bot]'
         run: |
-          docker tag "${DOCKER_IMAGE}:${REF}" $(echo "ghcr.io/${GITHUB_REPOSITORY}:${REF}" | tr '[:upper:]' '[:lower:]')
           docker push $(echo "ghcr.io/${GITHUB_REPOSITORY}:${REF}" | tr '[:upper:]' '[:lower:]')
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
-      - name: Push commit sha image to Docker Hub
-        if: github.actor != 'dependabot[bot]'
-        run: docker push "${DOCKER_IMAGE}:sha-${GITHUB_SHA}"
       - name: Push commit sha image to GitHub Container Registry
         if: github.actor != 'dependabot[bot]'
         run: |
-          docker tag "${DOCKER_IMAGE}:sha-${GITHUB_SHA}" $(echo "ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA}" | tr '[:upper:]' '[:lower:]')
           docker push $(echo "ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA}" | tr '[:upper:]' '[:lower:]')
   comment-composer-lock-diff:
     name: Comment composer.lock diff
@@ -126,7 +105,7 @@ jobs:
       - run: docker load --input ./docker-image/image.tar
         if: github.actor == 'dependabot[bot]'
       - run: git branch
-      - run: sed -i $(echo "s/main/sha-$GITHUB_SHA/g") generate-comments/Dockerfile
+      - run: sed -i $(echo "s/main/sha-$GITHUB_SHA/g") action.yaml
       - name: Comment composer.lock diff
         if: github.actor != 'dependabot[bot]'
         uses: ./
