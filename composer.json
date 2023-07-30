@@ -6,7 +6,7 @@
     "composer/composer": "^2.5.8",
     "guzzlehttp/guzzle": "^7.7.0",
     "ion-bazan/composer-diff": "^1.7",
-    "symfony/console": "^6.3.0"
+    "symfony/console": "^6.3.2"
   },
   "config": {
     "platform": {
