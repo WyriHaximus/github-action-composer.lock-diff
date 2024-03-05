@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
@@ -69,9 +69,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+## Reasoning
+
+The author of the [package](https://github.com/IonBazan/composer-diff/) used in this action also has an 
+[Action](https://github.com/IonBazan/composer-diff-action) for it. Decided to build a different action so you always 
+get the development and production dependencies changes in their own outputs and comments instead of just the output 
+with everything depending on flags and no commenting (+ updates on pushes). That became `v1` of this action, `v2` 
+introduces looking at the merged commit sha coming from the GitHub API. This sha is the sha of when the PR would be 
+merged, meaning this action compares between what is currently there, the base branch, and what would be there is the 
+PR this action runs on is merged. This is done because the head branch that contains the changeset for the PR might be 
+behind on changes in the base branch, and thus the comparison would be wrong.  
+
 ## License ##
 
-Copyright 2023 [Cees-Jan Kiewiet](http://wyrihaximus.net/)
+Copyright 2024 [Cees-Jan Kiewiet](http://wyrihaximus.net/)
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
