@@ -963,16 +963,16 @@
         },
         {
             "name": "ion-bazan/composer-diff",
-            "version": "v1.7.0",
+            "version": "v1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/IonBazan/composer-diff.git",
-                "reference": "6ac141b17e291ea683ca0d507288622d5e93bed7"
+                "reference": "d7f3cd5333c760d5bdfe0178571c99f52979bb9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/IonBazan/composer-diff/zipball/6ac141b17e291ea683ca0d507288622d5e93bed7",
-                "reference": "6ac141b17e291ea683ca0d507288622d5e93bed7",
+                "url": "https://api.github.com/repos/IonBazan/composer-diff/zipball/d7f3cd5333c760d5bdfe0178571c99f52979bb9f",
+                "reference": "d7f3cd5333c760d5bdfe0178571c99f52979bb9f",
                 "shasum": ""
             },
             "require": {
@@ -982,8 +982,8 @@
             },
             "require-dev": {
                 "composer/composer": "^1.1 || ^2.0",
-                "symfony/console": "^2.3 || ^3.0 || ^4.0 || ^5.0 || ^6.0",
-                "symfony/phpunit-bridge": "^4.2 || ^5.0 || ^6.0"
+                "symfony/console": "^2.3 || ^3.0 || ^4.0 || ^5.0 || ^6.0 || ^7.0",
+                "symfony/phpunit-bridge": "^4.2 || ^5.0 || ^6.0 || ^7.0"
             },
             "suggest": {
                 "composer/composer": "To use the binary without composer runtime",
@@ -1024,7 +1024,7 @@
             ],
             "support": {
                 "issues": "https://github.com/IonBazan/composer-diff/issues",
-                "source": "https://github.com/IonBazan/composer-diff/tree/v1.7.0"
+                "source": "https://github.com/IonBazan/composer-diff/tree/v1.9.0"
             },
             "funding": [
                 {
@@ -1032,7 +1032,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-05-11T07:12:51+00:00"
+            "time": "2024-04-26T11:05:06+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
