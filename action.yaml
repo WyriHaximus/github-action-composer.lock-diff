@@ -73,7 +73,7 @@ runs:
         fetch-depth: 1
         path: .wyrihaximus-composer.lock-diff/checkout/base-ref
     - name: Generate Comments
-      uses: docker://ghcr.io/wyrihaximus/github-action-composer.lock-diff:main
+      uses: docker://ghcr.io/wyrihaximus/github-action-composer.lock-diff:v2.1.0
       with:
         dryRun: ${{ inputs.dryRun }}
         workingDirectory: ${{ inputs.workingDirectory }}
