@@ -27,4 +27,4 @@ jobs:
         sed -i 's/main/${{ github.event.milestone.title }}/g' action.yaml
         cat action.yaml
         git add action.yaml
-        git commit -F release-${{ github.event.milestone.title }}-release-message.md
+        git commit -m "Prepare ${{ github.event.milestone.title }} release"
