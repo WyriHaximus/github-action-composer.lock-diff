@@ -23,8 +23,8 @@ jobs:
     with:
       milestone: ${{ github.event.milestone.title }}
       description: ${{ github.event.milestone.description }}
+      mustCreateCommit: true
       preReleaseScript: |
         sed -i 's/main/${{ github.event.milestone.title }}/g' action.yaml
         cat action.yaml
         git add action.yaml
-        git commit -m "Prepare ${{ github.event.milestone.title }} release"
