@@ -66,12 +66,20 @@ runs:
         ref: ${{ steps.sha.outputs.sha }}
         fetch-depth: 1
         path: .wyrihaximus-composer.lock-diff/checkout/sha-sha
+        sparse-checkout-cone-mode: false
+        sparse-checkout: |
+          ${{ inputs.workingDirectory }}composer.json
+          ${{ inputs.workingDirectory }}composer.lock
     - name: Checkout Base Ref
       uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.base.ref }}
         fetch-depth: 1
         path: .wyrihaximus-composer.lock-diff/checkout/base-ref
+        sparse-checkout-cone-mode: false
+        sparse-checkout: |
+          ${{ inputs.workingDirectory }}composer.json
+          ${{ inputs.workingDirectory }}composer.lock
     - name: Generate Comments
       uses: docker://ghcr.io/wyrihaximus/github-action-composer.lock-diff:main
       with:
