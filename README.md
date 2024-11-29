@@ -58,11 +58,6 @@ jobs:
     name: Comment composer.lock diff
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
       - name: Comment composer.lock diff
         uses: WyriHaximus/github-action-composer.lock-diff@v2
         env:
