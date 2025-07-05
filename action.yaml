@@ -81,7 +81,7 @@ runs:
           ${{ inputs.workingDirectory }}composer.json
           ${{ inputs.workingDirectory }}composer.lock
     - name: Generate Comments
-      uses: docker://ghcr.io/wyrihaximus/github-action-composer.lock-diff:main
+      uses: docker://ghcr.io/wyrihaximus/github-action-composer.lock-diff:v2.2.0
       with:
         dryRun: ${{ inputs.dryRun }}
         workingDirectory: ${{ inputs.workingDirectory }}
