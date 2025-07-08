@@ -75,7 +75,27 @@ jobs:
           docker build --platform=linux/arm64,linux/amd64 --output=type=registry --no-cache -f Dockerfile.tag -t $(echo "ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA}" | tr '[:upper:]' '[:lower:]') .
       - run: docker images
   comment-composer-lock-diff:
-    name: Comment composer.lock diff
+    name: Comment composer.lock diff (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Default
+            withDry:
+              dryRun: yes
+            with: {}
+          - name: Working Directory without suffix
+            withDry:
+              dryRun: yes
+              workingDirectory: generate-comments
+            with:
+              workingDirectory: generate-comments
+          - name: Working Directory with suffix
+            withDry:
+              dryRun: yes
+              workingDirectory: generate-comments/
+            with:
+              workingDirectory: generate-comments/
     needs:
       - build-docker-image
     runs-on: ubuntu-latest
@@ -100,13 +120,13 @@ jobs:
       - name: Comment composer.lock diff
         if: github.actor != 'dependabot[bot]'
         uses: ./
+        with: ${{ matrix.with }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Comment composer.lock diff
         id: composerdiff
         uses: ./
-        with:
-          dryRun: yes
+        with: ${{ matrix.withDry }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Show production table

@@ -4,7 +4,7 @@ set -eo pipefail
 
 
 echo "Working Directory:"
-workingDirectory=$([ -z "$INPUT_WORKINGDIRECTORY" ] && echo "" || echo "$(echo "${INPUT_WORKINGDIRECTORY}" | sed 's/\\//g')/")
+workingDirectory=$(echo "${INPUT_WORKINGDIRECTORY}")
 echo "${workingDirectory}"
 
 /workdir/vendor/bin/composer-diff ".wyrihaximus-composer.lock-diff/checkout/base-ref/${workingDirectory}composer.lock" ".wyrihaximus-composer.lock-diff/checkout/sha-sha/${workingDirectory}composer.lock" --with-links --with-platform --no-dev -vvv > /workdir/production.md
@@ -43,8 +43,9 @@ echo "${delimiter}" >> "${GITHUB_OUTPUT}"
 
 
 if [ "$INPUT_DRYRUN" != "yes" ]
-  echo "In a dry run so not upserting comments when desirable"
 then
+  echo "In a dry run so not upserting comments when desirable"
+else
   echo "Not in a dry run so upserting comments when desirable"
   php /workdir/comment.php production "🏰 Composer Production Dependency changes 🏰"
   php /workdir/comment.php development "🚧 Composer Development Dependency changes 🚧"
