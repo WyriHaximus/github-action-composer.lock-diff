@@ -47,7 +47,7 @@ runs:
             owner: context.payload.repository.owner.login,
             repo: context.payload.repository.name,
           }));
-          require('fs').appendFileSync(process.env.GITHUB_OUTPUT, `sha=${pr.data.merge_commit_sha}\n`);
+          return pr.data.merge_commit_sha;
     #          const requests = Array.from({length: 8}, (v, i) => 500 * Math.pow(2, i)).map(timeout => resolveShaAfterTimeout(timeout));
     #          console.log(requests);
     #          const pr = await Promise.any(requests);
@@ -60,16 +60,29 @@ runs:
     #              repo: context.payload.repository.name,
     #            });
     #          };
+    - name: Ensure Working Directory has a trailing slash when empty
+      uses: actions/github-script@v7
+      id: workingDirectory
+      with:
+        result-encoding: string
+        retries: 3
+        script: |
+          const workingDirectory = '${{ inputs.workingDirectory }}';
+          if (workingDirectory == '') {
+            return workingDirectory;
+          } else {
+            return workingDirectory.replace(/\/\s*$/, '').concat('/');
+          }
     - name: Checkout Head Sha
       uses: actions/checkout@v4
       with:
-        ref: ${{ steps.sha.outputs.sha }}
+        ref: ${{ steps.sha.outputs.result }}
         fetch-depth: 1
         path: .wyrihaximus-composer.lock-diff/checkout/sha-sha
         sparse-checkout-cone-mode: false
         sparse-checkout: |
-          ${{ inputs.workingDirectory }}composer.json
-          ${{ inputs.workingDirectory }}composer.lock
+          ${{ steps.workingDirectory.outputs.result }}composer.json
+          ${{ steps.workingDirectory.outputs.result }}composer.lock
     - name: Checkout Base Ref
       uses: actions/checkout@v4
       with:
@@ -78,10 +91,10 @@ runs:
         path: .wyrihaximus-composer.lock-diff/checkout/base-ref
         sparse-checkout-cone-mode: false
         sparse-checkout: |
-          ${{ inputs.workingDirectory }}composer.json
-          ${{ inputs.workingDirectory }}composer.lock
+          ${{ steps.workingDirectory.outputs.result }}composer.json
+          ${{ steps.workingDirectory.outputs.result }}composer.lock
     - name: Generate Comments
       uses: docker://ghcr.io/wyrihaximus/github-action-composer.lock-diff:main
       with:
         dryRun: ${{ inputs.dryRun }}
-        workingDirectory: ${{ inputs.workingDirectory }}
+        workingDirectory: ${{ steps.workingDirectory.outputs.result }}
