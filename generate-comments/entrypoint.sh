@@ -44,9 +44,9 @@ echo "${delimiter}" >> "${GITHUB_OUTPUT}"
 
 if [ "$INPUT_DRYRUN" != "yes" ]
 then
-  echo "In a dry run so not upserting comments when desirable"
-else
   echo "Not in a dry run so upserting comments when desirable"
   php /workdir/comment.php production "🏰 Composer Production Dependency changes 🏰"
   php /workdir/comment.php development "🚧 Composer Development Dependency changes 🚧"
+else
+  echo "In a dry run so not upserting comments when desirable"
 fi
