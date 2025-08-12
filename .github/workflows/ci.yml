@@ -13,7 +13,7 @@ jobs:
     outputs:
       REF: ${{ steps.generate-ref.outputs.ref }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - id: generate-ref
         name: Generate Ref
         run: |
@@ -29,7 +29,7 @@ jobs:
     name: Lint Dockerfile
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Lint Dockerfile
         uses: docker://hadolint/hadolint:latest-debian
         with:
@@ -42,7 +42,7 @@ jobs:
       - lint-dockerfile
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - run: mkdir ./docker-image/
       - name: Login to GitHub Container Registry
         if: github.actor != 'dependabot[bot]'
@@ -52,10 +52,10 @@ jobs:
             --username "${GITHUB_ACTOR}" \
             --password-stdin
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
         with:
           install: true
       - name: Inspect builder
@@ -101,15 +101,15 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Check if composer.lock has changed
         id: composer-lock-changed
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c # v46
         with:
           files: composer.lock
       - name: Download Images
         if: github.actor == 'dependabot[bot]'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: docker-image
           path: ./docker-image
@@ -139,14 +139,14 @@ jobs:
           DEVELOPMENT: ${{ steps.composerdiff.outputs.development }}
       - name: Assert Production Output
         if: steps.composer-lock-changed.outputs.any_changed == 'true' && ((steps.composerdiff.outputs.development == '' && steps.composerdiff.outputs.production != '') || (steps.composerdiff.outputs.development != '' && steps.composerdiff.outputs.production != ''))
-        uses: nick-fields/assert-action@v2
+        uses: nick-fields/assert-action@aa0067e01f0f6545c31755d6ca128c5a3a14f6bf # v2
         with:
           expected: "| Prod Packages"
           actual: ${{ steps.composerdiff.outputs.production }}
           comparison: startsWith
       - name: Assert Development Output
         if: steps.composer-lock-changed.outputs.any_changed == 'true' && ((steps.composerdiff.outputs.development != '' && steps.composerdiff.outputs.production == '') || (steps.composerdiff.outputs.development != '' && steps.composerdiff.outputs.production != ''))
-        uses: nick-fields/assert-action@v2
+        uses: nick-fields/assert-action@aa0067e01f0f6545c31755d6ca128c5a3a14f6bf # v2
         with:
           expected: "🚧 Composer Development Dependency changes 🚧"
           actual: ${{ steps.composerdiff.outputs.development }}
