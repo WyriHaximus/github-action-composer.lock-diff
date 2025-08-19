@@ -20,6 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Comment composer.lock diff
-        uses: WyriHaximus/github-action-composer.lock-diff@v2
+        uses: WyriHaximus/github-action-composer.lock-diff@a2ab16955cb525669a4eac1144796250ee97ddf7 # v2.2.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
