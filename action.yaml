@@ -74,7 +74,7 @@ runs:
             return workingDirectory.replace(/\/\s*$/, '').concat('/');
           }
     - name: Checkout Head Sha
-      uses: actions/checkout@v4
+      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       with:
         ref: ${{ steps.sha.outputs.result }}
         fetch-depth: 1
@@ -84,7 +84,7 @@ runs:
           ${{ steps.workingDirectory.outputs.result }}composer.json
           ${{ steps.workingDirectory.outputs.result }}composer.lock
     - name: Checkout Base Ref
-      uses: actions/checkout@v4
+      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
       with:
         ref: ${{ github.event.pull_request.base.ref }}
         fetch-depth: 1
