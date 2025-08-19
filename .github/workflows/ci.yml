@@ -139,14 +139,14 @@ jobs:
           DEVELOPMENT: ${{ steps.composerdiff.outputs.development }}
       - name: Assert Production Output
         if: steps.composer-lock-changed.outputs.any_changed == 'true' && ((steps.composerdiff.outputs.development == '' && steps.composerdiff.outputs.production != '') || (steps.composerdiff.outputs.development != '' && steps.composerdiff.outputs.production != ''))
-        uses: nick-fields/assert-action@v2
+        uses: nick-fields/assert-action@aa0067e01f0f6545c31755d6ca128c5a3a14f6bf # v2
         with:
           expected: "| Prod Packages"
           actual: ${{ steps.composerdiff.outputs.production }}
           comparison: startsWith
       - name: Assert Development Output
         if: steps.composer-lock-changed.outputs.any_changed == 'true' && ((steps.composerdiff.outputs.development != '' && steps.composerdiff.outputs.production == '') || (steps.composerdiff.outputs.development != '' && steps.composerdiff.outputs.production != ''))
-        uses: nick-fields/assert-action@v2
+        uses: nick-fields/assert-action@aa0067e01f0f6545c31755d6ca128c5a3a14f6bf # v2
         with:
           expected: "🚧 Composer Development Dependency changes 🚧"
           actual: ${{ steps.composerdiff.outputs.development }}
