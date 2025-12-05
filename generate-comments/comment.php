@@ -4,7 +4,8 @@ require '/workdir/vendor/autoload.php';
 
 $diff = file_get_contents('/workdir/' . $argv[1] . '.md');
 $prNumber = json_decode(file_get_contents(getenv('GITHUB_EVENT_PATH')), true)['pull_request']['number'];
-$locator = '<!-- @)}---^----- wyrihaximus/github-action-composer.lock-diff ' . getenv('GITHUB_WORKFLOW') . ' __/<+>\__ ' . $argv[1] . ' -----^---{(@ -->';
+$workingDirectory = getenv('INPUT_WORKINGDIRECTORY') ?: '/';
+$locator = '<!-- @)}---^----- wyrihaximus/github-action-composer.lock-diff ' . getenv('GITHUB_WORKFLOW') . ' __/<+>\__ ' . $argv[1] . ' __/<*>\__ ' . $workingDirectory . ' -----^---{(@ -->';
 $commentContents = $locator . PHP_EOL . $argv[2] . PHP_EOL . $diff . PHP_EOL;
 
 $client = new GuzzleHttp\Client();
