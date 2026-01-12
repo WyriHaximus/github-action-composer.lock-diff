@@ -45,8 +45,13 @@ echo "${delimiter}" >> "${GITHUB_OUTPUT}"
 if [ "$INPUT_DRYRUN" != "yes" ]
 then
   echo "Not in a dry run so upserting comments when desirable"
-  php /workdir/comment.php production "🏰 Composer Production Dependency changes 🏰"
-  php /workdir/comment.php development "🚧 Composer Development Dependency changes 🚧"
+  if [ -n "${workingDirectory}" ]; then
+    directoryLabel=" (${workingDirectory%/})"
+  else
+    directoryLabel=""
+  fi
+  php /workdir/comment.php production "🏰 Composer Production Dependency changes${directoryLabel} 🏰"
+  php /workdir/comment.php development "🚧 Composer Development Dependency changes${directoryLabel} 🚧"
 else
   echo "In a dry run so not upserting comments when desirable"
 fi

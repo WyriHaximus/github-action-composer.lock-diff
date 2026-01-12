@@ -4,7 +4,9 @@ require '/workdir/vendor/autoload.php';
 
 $diff = file_get_contents('/workdir/' . $argv[1] . '.md');
 $prNumber = json_decode(file_get_contents(getenv('GITHUB_EVENT_PATH')), true)['pull_request']['number'];
-$locator = '<!-- @)}---^----- wyrihaximus/github-action-composer.lock-diff ' . getenv('GITHUB_WORKFLOW') . ' __/<+>\__ ' . $argv[1] . ' -----^---{(@ -->';
+$workingDirectory = getenv('INPUT_WORKINGDIRECTORY') ?: '/';
+$locator = '<!-- @)}---^----- wyrihaximus/github-action-composer.lock-diff ' . getenv('GITHUB_WORKFLOW') . ' __/<+>\__ ' . $argv[1] . ' __/<*>\__ ' . $workingDirectory . ' -----^---{(@ -->';
+$legacyLocator = '<!-- @)}---^----- wyrihaximus/github-action-composer.lock-diff ' . getenv('GITHUB_WORKFLOW') . ' __/<+>\__ ' . $argv[1] . ' -----^---{(@ -->';
 $commentContents = $locator . PHP_EOL . $argv[2] . PHP_EOL . $diff . PHP_EOL;
 
 $client = new GuzzleHttp\Client();
@@ -17,7 +19,9 @@ $res = $client->request('GET', 'https://api.github.com/repos/' . getenv('GITHUB_
 $comments = json_decode($res->getBody()->getContents(), true);
 
 foreach ($comments as $comment) {
-    if (strpos($comment['body'], $locator) === 0) {
+    $isCurrentLocator = strpos($comment['body'], $locator) === 0;
+    $isLegacyLocator = !$isCurrentLocator && !getenv('INPUT_WORKINGDIRECTORY') && strpos($comment['body'], $legacyLocator) === 0;
+    if ($isCurrentLocator || $isLegacyLocator) {
         if (strlen($diff) === 0) {
             echo 'Deleting ', $argv[1], ' comment', PHP_EOL;
             $client->request('DELETE', 'https://api.github.com/repos/' . getenv('GITHUB_REPOSITORY') . '/issues/comments/' . $comment['id'], [
