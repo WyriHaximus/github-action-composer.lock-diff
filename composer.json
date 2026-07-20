@@ -4,7 +4,7 @@
   "require": {
     "php": "^8.3",
     "composer/composer": "^2.7.7",
-    "guzzlehttp/guzzle": "^7.8.0",
+    "guzzlehttp/guzzle": "^7.8.0 || ^8.0.0",
     "ion-bazan/composer-diff": "^1.9",
     "symfony/console": "^7.0.0"
   },
