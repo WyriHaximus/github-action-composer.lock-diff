@@ -12,6 +12,10 @@ inputs:
     description: Directory to execute the diff generator in
     required: false
     default: ''
+  allowMissing:
+    description: Treat missing composer.lock files as empty, set to "no" to disable, on by default.
+    required: false
+    default: 'yes'
 outputs:
   production:
     description: Changed production dependencies table
@@ -98,3 +102,4 @@ runs:
       with:
         dryRun: ${{ inputs.dryRun }}
         workingDirectory: ${{ steps.workingDirectory.outputs.result }}
+        allowMissing: ${{ inputs.allowMissing }}

@@ -96,6 +96,12 @@ jobs:
               workingDirectory: generate-comments/
             with:
               workingDirectory: generate-comments/
+          - name: Disallow Missing
+            withDry:
+              dryRun: yes
+              allowMissing: 'no'
+            with:
+              allowMissing: 'no'
     needs:
       - build-docker-image
     runs-on: ubuntu-latest

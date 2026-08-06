@@ -24,6 +24,15 @@ Which directory to run the composer diffing in.
 * *Type*: `string`
 * *Example*: `path/to/directory/`
 
+### allowMissing
+
+Whether to treat missing `composer.lock` files as empty. Set this to `no` to disable this behavior.
+
+* *Required*: `No`
+* *Default*: `yes`
+* *Type*: `string`
+* *Example*: `no`
+
 ## Output
 
 This action has two outputs: the `production` and `development` outputs respective tables for each set of dependencies.
