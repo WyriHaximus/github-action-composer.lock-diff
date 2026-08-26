@@ -1,0 +1,36 @@
+#!/usr/bin/env php
+<?php
+
+foreach ([__DIR__.'/../../autoload.php', __DIR__.'/../autoload.php', __DIR__.'/vendor/autoload.php'] as $file) {
+    if (file_exists($file)) {
+        require_once $file;
+        break;
+    }
+}
+
+unset($file);
+
+use IonBazan\ComposerDiff\Command\DiffCommand;
+use IonBazan\ComposerDiff\PackageDiff;
+use Symfony\Component\Console\Application;
+
+if (!class_exists('Symfony\Component\Console\Application')) {
+    echo 'Please install symfony/console >= 2.3 to use this binary or use composer diff instead.'.PHP_EOL;
+    exit(1);
+}
+
+if (!class_exists('Composer\Package\CompletePackage')) {
+    echo 'Please install composer/composer >= 1.1 to use this binary or use composer diff instead.'.PHP_EOL;
+    exit(1);
+}
+
+$command = new DiffCommand(new PackageDiff());
+$application = new Application();
+
+if (method_exists('Symfony\Component\Console\Application', 'addCommand')) {
+    $application->addCommand($command);
+} else {
+    $application->add($command);
+}
+$application->setDefaultCommand('diff', true);
+$application->run();
