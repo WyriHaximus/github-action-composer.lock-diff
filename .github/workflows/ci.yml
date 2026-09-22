@@ -55,24 +55,21 @@ jobs:
         uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
-        with:
-          install: true
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Inspect builder
         run: |
           echo "Name:      ${{ steps.buildx.outputs.name }}"
-          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
-          echo "Status:    ${{ steps.buildx.outputs.status }}"
-          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Driver:    ${{ steps.buildx.outputs.driver }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+          echo "Nodes:     ${{ steps.buildx.outputs.nodes }}"
       - run: docker version
       - run: docker images
         env:
           REF: ${{ needs.generate-ref.outputs.ref }}
-      - run: docker build --platform=linux/arm64,linux/amd64 --output=type=registry --no-cache -t "$(echo "ghcr.io/${GITHUB_REPOSITORY}:${{ needs.generate-ref.outputs.ref }}" | tr '[:upper:]' '[:lower:]')" ./generate-comments/ -f generate-comments/Dockerfile-build --target=runtime
+      - run: docker buildx build --platform=linux/arm64,linux/amd64 --output=type=registry --no-cache -t "$(echo "ghcr.io/${GITHUB_REPOSITORY}:${{ needs.generate-ref.outputs.ref }}" | tr '[:upper:]' '[:lower:]')" ./generate-comments/ -f generate-comments/Dockerfile-build --target=runtime
       - run: |
           printf "FROM %s" $(echo "ghcr.io/${GITHUB_REPOSITORY}:${{ needs.generate-ref.outputs.ref }}" | tr '[:upper:]' '[:lower:]') >> Dockerfile.tag
-          docker build --platform=linux/arm64,linux/amd64 --output=type=registry --no-cache -f Dockerfile.tag -t $(echo "ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA}" | tr '[:upper:]' '[:lower:]') .
+          docker buildx build --platform=linux/arm64,linux/amd64 --output=type=registry --no-cache -f Dockerfile.tag -t $(echo "ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA}" | tr '[:upper:]' '[:lower:]') .
       - run: docker images
   comment-composer-lock-diff:
     name: Comment composer.lock diff (${{ matrix.name }})
