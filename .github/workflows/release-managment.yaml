@@ -18,6 +18,11 @@ permissions:
 jobs:
   release-management:
     name: Release Management
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      packages: write
     secrets: inherit
     uses: WyriHaximus/github-workflows/.github/workflows/github-action-release-management.yaml@f7d123a11d05722a3d9e6679a2b54be245268ac6 # v1.0.3
     with:
